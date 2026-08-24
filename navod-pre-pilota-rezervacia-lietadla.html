@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Návod pre pilota — rezervácia lietadla</title>
+  <style>
+    :root { --ink: #172033; --muted: #5e6a7d; --line: #dce3ee; --accent: #1663c7; --wash: #f5f8fc; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--wash); color: var(--ink); font-family: Arial, sans-serif; line-height: 1.55; }
+    main { max-width: 920px; margin: 36px auto; padding: 44px; background: #fff; box-shadow: 0 8px 28px rgba(26, 43, 73, .10); }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.18; }
+    h2 { margin: 42px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 23px; }
+    p, li { font-size: 16px; }
+    .lead { margin: 0; color: var(--muted); font-size: 18px; }
+    .step { margin-top: 26px; }
+    .step-number { display: inline-block; min-width: 31px; margin-right: 8px; border-radius: 50%; background: var(--accent); color: #fff; text-align: center; line-height: 31px; font-weight: 700; }
+    .note { padding: 14px 18px; border-left: 4px solid var(--accent); background: #eef5ff; }
+    figure { margin: 20px 0 30px; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 5px; }
+    figcaption { margin-top: 8px; color: var(--muted); font-size: 14px; }
+    ul { padding-left: 24px; }
+    @media (max-width: 680px) { main { margin: 0; padding: 24px 18px; box-shadow: none; } h1 { font-size: 27px; } }
+    @media print { body { background: #fff; } main { max-width: none; margin: 0; padding: 0; box-shadow: none; } h2 { break-after: avoid; } figure { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Návod pre pilota: rezervácia lietadla</h1>
+    <p class="lead">Jednoduchý postup od vytvorenia rezervácie po jej schválenie alebo zrušenie.</p>
+
+    <h2>Pred začiatkom</h2>
+    <p>Prihláste sa do systému údajmi, ktoré vám poskytol administrátor. Rezervovať môžete len lietadlá, ktoré vám boli pridelené.</p>
+    <figure>
+      <img src="https://rezervacie-beta.lietaj.me/docu/images/01-admin-grid-po-prihlaseni.png" alt="Administrácia po prihlásení pilota">
+      <figcaption>Administrácia po prihlásení.</figcaption>
+    </figure>
+
+    <section class="step">
+      <h2><span class="step-number">1</span>Otvorte zoznam rezervácií</h2>
+      <p>V hornom menu otvorte <strong>Rezervácie → Zoznam</strong>. Tu vidíte svoje existujúce rezervácie a môžete vytvoriť novú.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">2</span>Vytvorte novú rezerváciu</h2>
+      <p>Kliknite na tlačidlo <strong>Vytvoriť rezerváciu</strong>.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/02-vytvorit-rezervaciu.png" alt="Tlačidlo Vytvoriť rezerváciu">
+        <figcaption>Vstupný bod pre vytvorenie rezervácie.</figcaption>
+      </figure>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">3</span>Vyberte lietadlo</h2>
+      <p>Vyberte lietadlo, na ktorom chcete letieť. Zobrazia sa len lietadlá, ktoré vám priradil administrátor. Služba je nastavená na <strong>Súkromný let</strong>. Rezerváciu uložte.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/03-zaklad-rezervacie.png" alt="Výber lietadla a základ rezervácie">
+        <figcaption>Výber lietadla pre súkromný let.</figcaption>
+      </figure>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">4</span>Zadajte termín letu</h2>
+      <p>Po vytvorení základnej rezervácie otvorte jej detail. V časti <strong>Detail letu</strong> kliknite na <strong>Pridať atribúty</strong> a zadajte dátum a čas <strong>Rezervovať od</strong> a <strong>Rezervovať do</strong>.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/04-detail-pridat-atributy.png" alt="Pridanie detailov letu">
+        <figcaption>Pridanie termínu letu v detaile rezervácie.</figcaption>
+      </figure>
+      <p>Systém automaticky vypočíta dĺžku rezervácie a overí dostupnosť lietadla. Keď je termín voľný, rezerváciu uložte.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/05-termin-letu-volny.png" alt="Voľný termín letu">
+        <figcaption>Potvrdenie voľného termínu.</figcaption>
+      </figure>
+      <div class="note"><strong>Ak je termín obsadený:</strong> vyberte iný čas alebo iný deň. Odkaz <strong>Zobraziť dnešné lety</strong> vám ukáže obsadenosť lietadla.</div>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/06-termin-obsadeny.png" alt="Obsadený termín letu">
+        <figcaption>Upozornenie na kolíziu termínu.</figcaption>
+      </figure>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">5</span>Počkajte na schválenie</h2>
+      <p>Po uložení termínu sa rezervácia odošle administrátorovi na schválenie. Vy dostanete e-mail o vytvorení žiadosti. Kým rezervácia nie je schválená, môžete ju upraviť alebo zrušiť.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">6</span>Ak treba, zmeňte termín</h2>
+      <p>V detaile rezervácie otvorte menu <strong>Akcie → Zmeniť termín</strong>. Zadajte nový termín a uložte ho. Po schválení letu už zmenu riešte s administrátorom.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/07-zmenit-termin.png" alt="Zmena termínu rezervácie">
+        <figcaption>Zmena termínu pred schválením rezervácie.</figcaption>
+      </figure>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">7</span>Ak treba, zrušte rezerváciu</h2>
+      <p>Ak let nepotrebujete, v detaile rezervácie kliknite na <strong>Zrušiť rezerváciu</strong>. Termín sa uvoľní a rezervácia sa prestane zobrazovať v kalendári.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/08-zrusit-rezervaciu.png" alt="Zrušenie rezervácie">
+        <figcaption>Zrušenie rezervácie z jej detailu.</figcaption>
+      </figure>
+    </section>
+
+    <section class="step">
+      <h2><span class="step-number">8</span>Overte výsledok</h2>
+      <p>Administrátor rezerváciu schváli alebo zruší. O výsledku dostanete e-mail. Potvrdený let nájdete v <strong>Rezervácie → Kalendár letov</strong>.</p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/11-timeline-kalendar.png" alt="Kalendár letov">
+        <figcaption>Kalendár letov s potvrdenými rezerváciami.</figcaption>
+      </figure>
+      <p>Po uskutočnení letu už nemusíte v systéme vykonať žiadny krok; jeho konečný stav zapíše administrátor.</p>
+    </section>
+
+    <h2>Rýchla kontrola pred letom</h2>
+    <ul>
+      <li>Máte v detailoch správne lietadlo.</li>
+      <li>Termín od–do je správny.</li>
+      <li>Rezervácia je potvrdená.</li>
+      <li>Pri zmene po schválení ste kontaktovali administrátora.</li>
+    </ul>
+  </main>
+</body>
+</html>

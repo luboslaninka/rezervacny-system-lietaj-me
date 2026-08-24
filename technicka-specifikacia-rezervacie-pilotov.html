@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rezervácie pilotov – funkčná dokumentácia</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --border: #e2e5ea;
+    --text: #1c2430;
+    --muted: #5f6b7a;
+    --accent: #1b5e9c;
+    --accent-soft: #eaf2fa;
+    --ok: #1f7a45;
+    --ok-soft: #e8f5ee;
+    --warn: #96601a;
+    --warn-soft: #fdf3e3;
+    --open: #7a3ba8;
+    --open-soft: #f3ebfa;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  header.masthead {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+  }
+
+  header.masthead h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  header.masthead .subtitle {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 17px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .meta div span.k {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  nav.toc {
+    position: sticky;
+    top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    font-size: 14px;
+  }
+
+  nav.toc h2 {
+    margin: 0 0 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  nav.toc ol { margin: 0; padding-left: 20px; }
+  nav.toc li { margin-bottom: 7px; }
+  nav.toc a { color: var(--text); text-decoration: none; }
+  nav.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  main { min-width: 0; }
+
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    margin-bottom: 22px;
+  }
+
+  section > h2 {
+    margin: 0 0 4px;
+    font-size: 21px;
+    letter-spacing: -0.01em;
+  }
+
+  section > h2 + .lead {
+    margin: 0 0 18px;
+    color: var(--muted);
+  }
+
+  h3 { margin: 26px 0 8px; font-size: 17px; }
+  h3:first-of-type { margin-top: 18px; }
+
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-size: 15px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  th { background: var(--accent-soft); font-weight: 600; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  figure {
+    margin: 16px 0 22px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fbfcfd;
+  }
+
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  figure figcaption {
+    padding: 9px 14px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  figure figcaption b {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 18px;
+  }
+
+  .steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 22px 44px;
+    border-left: 2px solid var(--border);
+    margin-left: 14px;
+  }
+
+  .steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+  .steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .steps > li > strong:first-child { display: block; margin-bottom: 2px; }
+
+  .note {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 14px 0;
+  }
+
+  .note.caution { border-left-color: var(--warn); background: var(--warn-soft); }
+  .note p:last-child { margin-bottom: 0; }
+
+  .note .label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge.done { background: var(--ok-soft); color: var(--ok); }
+  .badge.hold { background: var(--warn-soft); color: var(--warn); }
+  .badge.state { background: var(--open-soft); color: var(--open); }
+
+  code {
+    background: #eef1f5;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 0.9em;
+  }
+
+  a { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; padding: 16px 14px 48px; gap: 18px; }
+    nav.toc { position: static; }
+    section { padding: 20px 18px; }
+    header.masthead { padding: 22px 20px; }
+  }
+
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .page { display: block; max-width: none; padding: 0; }
+    nav.toc { display: none; }
+    section { border: none; border-top: 1px solid var(--border); border-radius: 0; padding: 14px 0; page-break-inside: avoid; }
+    figure { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <h1>Rezervácie pilotov</h1>
+    <p class="subtitle">Funkčná dokumentácia modulu pre rezerváciu súkromných letov pilotmi – rezervačný systém lietaj.me</p>
+    <div class="meta">
+      <div><span class="k">Testovacie prostredie</span><a href="https://rezervacie-beta.lietaj.me/prihlasnie">rezervacie-beta.lietaj.me</a></div>
+      <div><span class="k">Produkcia</span><a href="https://rezervacie.lietaj.me/">rezervacie.lietaj.me</a></div>
+      <div><span class="k">Realizácia</span>Jozef Pačan</div>
+      <div><span class="k">Zadávateľ</span>Ľuboš Slaninka</div>
+      <div><span class="k">Obdobie</span>23. – 27. júl 2026</div>
+      <div><span class="k">Stav</span><span class="badge hold">Implementované, pozastavené</span></div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h2>Obsah</h2>
+    <ol>
+      <li><a href="#uvod">Úvod a rozsah</a></li>
+      <li><a href="#roly">Roly a oprávnenia</a></li>
+      <li><a href="#prihlasenie">Prihlásenie pilota</a></li>
+      <li><a href="#rezervacia">Vytvorenie rezervácie</a></li>
+      <li><a href="#zmeny">Zmena a zrušenie</a></li>
+      <li><a href="#admin">Administrácia letu</a></li>
+      <li><a href="#kalendar">Kalendár letov</a></li>
+      <li><a href="#notifikacie">E-mailové notifikácie</a></li>
+      <li><a href="#stavy">Stavy rezervácie</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="uvod">
+      <h2>1. Úvod a rozsah</h2>
+      <p class="lead">Čo modul rieši a v akom stave sa nachádza.</p>
+      <p>
+        Modul <strong>Rezervácie pilotov</strong> rozširuje rezervačný systém lietaj.me o možnosť, aby si
+        prihlásený pilot sám zarezervoval lietadlo na <strong>súkromný let</strong>. Rezervácia prechádza
+        schvaľovacím procesom u administrátora, obe strany sú o zmenách informované e-mailom.
+      </p>
+      <p>
+        Riešenie je nasadené na samostatnej testovacej kópii produkčného systému
+        <a href="https://rezervacie-beta.lietaj.me/prihlasnie">rezervacie-beta.lietaj.me</a>, aby bolo možné
+        funkcionalitu overiť bez zásahu do ostrej prevádzky.
+      </p>
+
+      <h3>Čo je v rozsahu</h3>
+      <ul>
+        <li>Prihlásenie pilota do administračného rozhrania.</li>
+        <li>Vytvorenie rezervácie súkromného letu vrátane výberu lietadla a termínu od–do.</li>
+        <li>Kontrola dostupnosti termínu pri jeho zadávaní.</li>
+        <li>Úprava termínu a zrušenie rezervácie zo strany pilota.</li>
+        <li>Potvrdenie alebo zrušenie letu administrátorom.</li>
+        <li>Kalendár (timeline) všetkých letov naprieč lietadlami.</li>
+        <li>Automatické e-mailové notifikácie pre pilota aj administrátora.</li>
+      </ul>
+
+      <h3>Čo nie je v rozsahu</h3>
+      <ul>
+        <li>Časové sloty pre pilotné rezervácie – vedome vynechané, zadáva sa čas od–do.</li>
+        <li>Rezervácia vyhliadkového letu pilotom – pilot môže rezervovať iba súkromný let.</li>
+        <li>Export do Google kalendára (ICS feed) – možné doplniť na požiadanie.</li>
+      </ul>
+
+    </section>
+
+    <section id="roly">
+      <h2>2. Roly a oprávnenia</h2>
+      <table>
+        <thead>
+          <tr><th style="width:22%">Rola</th><th>Oprávnenia</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Pilot</strong></td>
+            <td>
+              Prihlási sa údajmi vytvorenými pri založení pilota. Rezervuje si <strong>iba súkromný let</strong>,
+              a to len na lietadlách, ktoré mu administrátor priradil. Do schválenia môže meniť termín,
+              prípadne rezerváciu zrušiť. V kalendári vidí všetky rezervácie všetkých lietadiel. V zozname
+              rezervácií si vie odfiltrovať vlastné lety.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Administrátor</strong></td>
+            <td>
+              Priraďuje pilotom lietadlá pre súkromné lety. Prijíma notifikácie o nových požiadavkách.
+              Let potvrdzuje alebo ruší a zapisuje ho ako odlietaný či neodlietaný. Rovnaký proces ako
+              pri koncových zákazníkoch.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <span class="label">Rozdiel medzi kalendárom a výberom</span>
+        <p>
+          Na timeline vidí pilot <strong>všetky</strong> lietadlá, aby si vedel zistiť voľné časy.
+          Pri samotnej rezervácii si však môže vybrať <strong>len z priradených</strong> lietadiel.
+          Obmedzenie timeline výhradne na priradené lietadlá je technicky možné, ale pri súčasnom
+          počte lietadiel sa nepovažuje za potrebné.
+        </p>
+      </div>
+    </section>
+
+    <section id="prihlasenie">
+      <h2>3. Prihlásenie pilota</h2>
+      <p>
+        Pilot sa prihlasuje štandardne na adrese <code>rezervacie.lietaj.me/prihlasnie</code>
+        (testovacie prostredie <code>rezervacie-beta.lietaj.me/prihlasnie</code>) prihlasovacími údajmi,
+        ktoré mu boli vygenerované pri založení pilota administrátorom.
+      </p>
+      <p>
+        Po prihlásení sa dostáva do administračného gridu – menu administrácie je hore, obsah dole.
+        V menu <strong>Rezervácie</strong> má k dispozícii dve položky: <strong>Zoznam</strong>
+        a <strong>Kalendár letov</strong>.
+      </p>
+
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/01-admin-grid-po-prihlaseni.png" alt="Administračný grid po prihlásení pilota so zoznamom rezervácií">
+        <figcaption><b>Obr. 1</b> – Administračný grid po prihlásení. Menu Rezervácie obsahuje položky Zoznam a Kalendár letov. Zoznam ponúka filtre podľa lietadla, pilota, služby, termínu, stavu letu aj ukončenia.</figcaption>
+      </figure>
+
+      <div class="note">
+        <span class="label">Prečo backend, a nie frontend</span>
+        <p>
+          Formulár je vždy v prihlásenej (backendovej) časti systému. Umiestnenie tlačidla je otázkou
+          odkazu, ale logicky patrí do sekcie rezervácií, kde má pilot zároveň prehľad o svojich letoch.
+        </p>
+      </div>
+    </section>
+
+    <section id="rezervacia">
+      <h2>4. Vytvorenie rezervácie súkromného letu</h2>
+      <p class="lead">Krokový proces v backende, tak ako je aktuálne implementovaný.</p>
+
+      <ol class="steps">
+        <li>
+          <strong>Spustenie novej rezervácie</strong>
+          V zozname rezervácií pilot klikne na tlačidlo <em>Vytvoriť rezerváciu</em>.
+          <figure>
+            <img src="https://rezervacie-beta.lietaj.me/docu/images/02-vytvorit-rezervaciu.png" alt="Tlačidlo Vytvoriť rezerváciu v zozname rezervácií">
+            <figcaption><b>Obr. 2</b> – Vstupný bod do rezervácie je v sekcii Rezervácie → Zoznam.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <strong>Vytvorenie základu rezervácie</strong>
+          Pilot vyberie lietadlo zo zoznamu lietadiel, ktoré mu boli administrátorom priradené pre
+          súkromné lety. Služba je pevne nastavená na <em>Súkromný let</em>, počiatočný stav na
+          <em>Vytvorená</em>.
+          <figure>
+            <img src="https://rezervacie-beta.lietaj.me/docu/images/03-zaklad-rezervacie.png" alt="Formulár základu rezervácie s výberom lietadla, služby a počiatočného stavu">
+            <figcaption><b>Obr. 3</b> – Základ rezervácie: lietadlo, služba a počiatočný stav.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <strong>Doplnenie termínu letu</strong>
+          Na detaile rezervácie je sekcia <em>Detail letu</em> s prázdnym termínom. Tlačidlom
+          <em>Pridať atribúty</em> sa otvorí formulár pre zadanie termínu.
+          <figure>
+            <img src="https://rezervacie-beta.lietaj.me/docu/images/04-detail-pridat-atributy.png" alt="Detail rezervácie s tlačidlom Pridať atribúty">
+            <figcaption><b>Obr. 4</b> – Detail rezervácie č. 1393 v stave Vytvorená, pred zadaním termínu.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <strong>Vytvorenie času rezervácie</strong>
+          Zadáva sa <em>Rezervovať od</em> a <em>Rezervovať do</em> – dátum aj čas. Riešenie počíta
+          aj s viacdňovým prenájmom lietadla, preto sa nezadáva dĺžka letu v minútach, ale rozsah.
+          Systém priebežne prepočíta dĺžku rezervácie a overí dostupnosť termínu.
+          <figure>
+            <img src="https://rezervacie-beta.lietaj.me/docu/images/05-termin-letu-volny.png" alt="Modálne okno Zmeniť rezerváciu s výberom lietadla a termínom od-do, kontrola hlási voľný termín">
+            <figcaption><b>Obr. 5</b> – Zadanie termínu. Systém vypočítal dĺžku 25 minút a potvrdil, že termín je voľný.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <strong>Odoslanie požiadavky</strong>
+          Po uložení termínu sa automaticky odošle informačný e-mail administrátorovi a potvrdzujúci
+          e-mail pilotovi. Rezervácia čaká na potvrdenie.
+        </li>
+      </ol>
+
+      <h3>Kontrola obsadenosti termínu</h3>
+      <p>
+        Pri zadávaní termínu sa kontroluje kolízia s existujúcimi rezerváciami vybraného lietadla.
+        Ak je termín obsadený, formulár na to upozorní. K dispozícii je aj prepínač
+        <em>Zobraziť dnešné lety</em>, ktorý zobrazí lety daného lietadla na zvolený deň.
+      </p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/06-termin-obsadeny.png" alt="Formulár termínu s hlásením, že termín je obsadený, a odkazom Zobraziť dnešné lety">
+        <figcaption><b>Obr. 6</b> – Kolízia termínu. Pri dĺžke 190 minút systém hlási obsadený termín; odkaz Zobraziť dnešné lety sprístupní prehľad letov lietadla.</figcaption>
+      </figure>
+
+      <div class="note caution">
+        <span class="label">Prečo je proces krokový</span>
+        <p>
+          Aplikácia nemá koncept quote (košíka), takže údaje sa musia priebežne niekde ukladať.
+          V prvom kroku sa preto vytvorí prázdna objednávka, v ktorej sa definuje iba to, či ide
+          o vyhliadkový alebo súkromný let. Až v ďalšom kroku sa podľa typu letu vyžadujú konkrétne
+          údaje – teda samostatný custom formulár pre každý typ letu.
+        </p>
+      </div>
+    </section>
+
+    <section id="zmeny">
+      <h2>5. Zmena a zrušenie rezervácie</h2>
+
+      <h3>Zmena termínu</h3>
+      <p>
+        Pokiaľ let ešte nebol schválený, pilot si môže sám zmeniť dátum a čas letu cez menu
+        <em>Akcie → Zmeniť termín</em>. Po schválení už zmenu rieši operatívne cez administrátora.
+      </p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/07-zmenit-termin.png" alt="Detail rezervácie s otvoreným menu Akcie a položkou Zmeniť termín">
+        <figcaption><b>Obr. 7</b> – Termín letu je vedený v dvoch variantoch: <em>Viditeľná</em> (zobrazovaná v kalendári) a <em>Reálna</em> (skutočný čas letu). Menu Akcie ponúka Zmeniť termín.</figcaption>
+      </figure>
+
+      <h3>Zrušenie letu</h3>
+      <p>
+        Pilot môže rezerváciu zrušiť tlačidlom <em>Zrušiť rezerváciu</em> v hlavičke detailu.
+        Zrušená rezervácia sa <strong>nezobrazuje v kalendári</strong> a uvoľnený termín je opäť
+        k dispozícii.
+      </p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/08-zrusit-rezervaciu.png" alt="Detail rezervácie s tlačidlom Zrušiť rezerváciu v pravom hornom rohu">
+        <figcaption><b>Obr. 8</b> – Zrušenie rezervácie je dostupné z detailu letu.</figcaption>
+      </figure>
+    </section>
+
+    <section id="admin">
+      <h2>6. Administrácia letu</h2>
+      <p>
+        Administrátor pracuje s pilotnou rezerváciou rovnakým spôsobom ako s rezerváciou koncového
+        zákazníka. Po prijatí notifikácie o novej požiadavke má k dispozícii tieto akcie:
+      </p>
+      <table>
+        <thead>
+          <tr><th style="width:28%">Akcia</th><th>Dôsledok</th><th style="width:18%">Notifikácia pilotovi</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Potvrdiť</td><td>Rezervácia je schválená a zostáva v kalendári.</td><td>Áno</td></tr>
+          <tr><td>Zmeniť termín</td><td>Úprava termínu letu z pozície administrátora.</td><td>Áno</td></tr>
+          <tr><td>Zrušiť rezerváciu</td><td>Rezervácia je zrušená a z kalendára zmizne.</td><td>Áno</td></tr>
+          <tr><td>Zapísať let ako odlietaný / neodlietaný</td><td>Uzavretie rezervácie po termíne letu.</td><td>–</td></tr>
+        </tbody>
+      </table>
+
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/09-potvrdit-let.png" alt="Detail rezervácie s otvoreným menu Akcie a položkou Potvrdiť">
+        <figcaption><b>Obr. 9</b> – Schválenie letu administrátorom cez Akcie → Potvrdiť.</figcaption>
+      </figure>
+    </section>
+
+    <section id="kalendar">
+      <h2>7. Kalendár letov</h2>
+      <p>
+        Kalendár (timeline) je dostupný z menu <strong>Rezervácie → Kalendár letov</strong> a zobrazuje
+        rezervácie naprieč lietadlami. Pilot v ňom vidí všetky rezervácie, nielen svoje.
+      </p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/10-vstup-do-kalendara.png" alt="Zoznam rezervácií s otvoreným menu a zvýraznenou položkou Kalendár letov">
+        <figcaption><b>Obr. 10</b> – Vstup do kalendára z menu. V zozname sú viditeľné stavy rezervácií – Vytvorená, Zrušená.</figcaption>
+      </figure>
+
+      <p>
+        Timeline zobrazuje jednotlivé lietadlá v riadkoch a hodiny dňa v stĺpcoch. Farebne sú odlíšené
+        vyhliadkové a súkromné lety. Navigácia umožňuje skok na konkrétny dátum a rýchle prepnutie na
+        dnes, zajtra alebo pozajtra.
+      </p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/11-timeline-kalendar.png" alt="Timeline kalendár letov s lietadlami v riadkoch a hodinami v stĺpcoch">
+        <figcaption><b>Obr. 11</b> – Timeline kalendára letov s rezerváciami pre jednotlivé lietadlá.</figcaption>
+      </figure>
+
+      <p>
+        Po kliknutí na event sa zobrazí stručný detail letu – typ, lietadlo, pilot a termín od–do –
+        s preklikom na stránku s úplným detailom.
+      </p>
+      <figure>
+        <img src="https://rezervacie-beta.lietaj.me/docu/images/12-detail-eventu.png" alt="Vyskakovacie okno s detailom rezervácie po kliknutí na event v kalendári">
+        <figcaption><b>Obr. 12</b> – Detail eventu s odkazom Detail letu.</figcaption>
+      </figure>
+
+      <h3>Dva termíny na jednu rezerváciu</h3>
+      <p>
+        V určitých scenároch môže kalendár obsahovať <strong>dva termíny pre jednu rezerváciu</strong>.
+        Nastáva to napríklad vtedy, keď si zákazník zarezervoval jeden termín, ale bol mu ponúknutý
+        náhradný termín na odsúhlasenie. Kým zákazník neodsúhlasí alebo neodmietne, sú v kalendári
+        blokované <strong>oba termíny</strong>. Zrušená rezervácia sa v kalendári nenachádza.
+      </p>
+
+      <h3>Zobrazenie na mobile</h3>
+      <div class="note caution">
+        <span class="label">Známe obmedzenie</span>
+        <p>
+          Timeline funguje dobre na desktope. Na mobile bol ponechaný desktopový grid, aby sa dalo
+          po stránke posúvať. Je to menej prehľadné kvôli malej obrazovke, ale s trochou cviku
+          použiteľné.
+        </p>
+      </div>
+    </section>
+
+    <section id="notifikacie">
+      <h2>8. E-mailové notifikácie</h2>
+      <table>
+        <thead>
+          <tr><th style="width:30%">Udalosť</th><th style="width:16%">Príjemca</th><th>Obsah</th><th style="width:14%">Stav</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Vytvorenie rezervácie</td>
+            <td>Pilot</td>
+            <td>Potvrdenie o vytvorení objednávky</td>
+            <td><span class="badge done">Hotové</span></td>
+          </tr>
+          <tr>
+            <td>Vytvorenie rezervácie</td>
+            <td>Administrátor</td>
+            <td>Informácia o novej rezervácii čakajúcej na schválenie</td>
+            <td><span class="badge done">Hotové</span></td>
+          </tr>
+          <tr>
+            <td>Potvrdenie letu</td>
+            <td>Pilot</td>
+            <td>Informácia o schválení rezervácie</td>
+            <td><span class="badge done">Hotové</span></td>
+          </tr>
+          <tr>
+            <td>Zrušenie letu administrátorom</td>
+            <td>Pilot</td>
+            <td>Informácia o zrušení rezervácie</td>
+            <td><span class="badge done">Hotové</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="stavy">
+      <h2>9. Stavy rezervácie</h2>
+      <p class="lead">Stavy podľa administračného rozhrania.</p>
+      <table>
+        <thead>
+          <tr><th style="width:20%">Stav</th><th style="width:22%">Kto ho vyvolá</th><th style="width:16%">V kalendári</th><th>Možné akcie</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge state">Vytvorená</span></td>
+            <td>Pilot – založenie rezervácie</td>
+            <td>Áno, po zadaní termínu</td>
+            <td>Pridať alebo zmeniť termín, zrušiť rezerváciu</td>
+          </tr>
+          <tr>
+            <td><span class="badge state">Potvrdená</span></td>
+            <td>Administrátor – akcia Potvrdiť</td>
+            <td>Áno</td>
+            <td>Zmeny rieši pilot cez administrátora</td>
+          </tr>
+          <tr>
+            <td><span class="badge state">Zrušená</span></td>
+            <td>Pilot alebo administrátor</td>
+            <td>Nie</td>
+            <td>Vytvoriť novú rezerváciu</td>
+          </tr>
+          <tr>
+            <td><span class="badge state">Odlietaná / neodlietaná</span></td>
+            <td>Administrátor – po termíne letu</td>
+            <td>Áno, ako ukončená</td>
+            <td>Uzavretý záznam</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Varianty termínu</h3>
+      <p>
+        Každá rezervácia nesie termín v dvoch variantoch, ktoré sa v detaile letu zobrazujú oddelene:
+      </p>
+      <table>
+        <thead>
+          <tr><th style="width:24%">Variant</th><th>Význam</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Viditeľná</strong></td><td>Termín zobrazovaný v kalendári a komunikovaný pilotovi.</td></tr>
+          <tr><td><strong>Reálna</strong></td><td>Skutočný čas letu, ktorý sa môže po vykonaní letu líšiť.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+</div>
+</body>
+</html>
